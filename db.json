@@ -1,0 +1,19 @@
+{
+  "notes": [
+    {
+      "id": 1,
+      "title": "Meeting Notes",
+      "content": "Discuss project updates and deadlines."
+    },
+    {
+      "id": 2,
+      "title": "To-Do List",
+      "content": "Buy groceries, complete homework, call John."
+    },
+    {
+      "id": 3,
+      "title": "Project Ideas",
+      "content": "Brainstorm new project ideas for the team."
+    }
+  ]
+}
