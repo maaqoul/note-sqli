@@ -4,11 +4,14 @@ import NoteItem from './NoteItem.vue'
 import { useNotesStore } from '@/stores/notes'
 
 const store = useNotesStore()
-store.fetchNotes()
 const notes = computed(() => store.notes)
+// if (!notes.value.length) {
+//   store.fetchNotes()
+// }
 </script>
 
 <template>
+  <RouterLink to="/new">Create new note</RouterLink>
   <NoteItem class="space-y-4" v-for="note in notes" :key="note.id" :note="note" />
 </template>
 

@@ -1,21 +1,25 @@
 <script setup>
-import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useNotesStore } from '@/stores/notes'
+import { computed } from 'vue'
 const store = useNotesStore()
 const router = useRouter()
-const note = ref({
-  title: '',
-  content: ''
+const { id } = router.currentRoute.value.params
+const note = computed(() => {
+  const storedNote = store.getNoteById(id)
+  if (storedNote) return storedNote
+  return store.fetchNoteById(id)
 })
+
 function submitNote() {
-  store.addNote(note.value)
+  // todo logic
+  store.updateNote(note.value)
   router.go(-1)
 }
 </script>
 
 <template>
-  <div class="p-4 border rounded shadow-lg">
+  <div v-if="note !== null" class="p-4 border rounded shadow-lg">
     <form @submit.prevent="submitNote">
       <div class="mb-4">
         <label for="title" class="block text-gray-700 text-sm font-bold mb-2">Title</label>
@@ -42,4 +46,5 @@ function submitNote() {
       <RouterLink to="/" class="text-white font-bold py-2 px-4 rounded mx-1">cancel</RouterLink>
     </form>
   </div>
+  <div v-else>Not found</div>
 </template>
