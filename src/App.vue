@@ -1,12 +1,9 @@
 <script setup>
-import { computed } from 'vue'
 import { useNotesStore } from '@/stores/notes'
 
 const store = useNotesStore()
-const notes = computed(() => store.notes)
-if (!notes.value.length) {
-  store.fetchNotes()
-}
+
+store.fetchNotes()
 </script>
 
 <template>

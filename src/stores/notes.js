@@ -30,16 +30,42 @@ export const useNotesStore = defineStore('notes', {
         return null
       }
     },
-    addNote(newNote) {
+    async addNote(newNote) {
       const newId = Math.max(...this.notes.map(({ id }) => id)) + 1
-      this.notes = [...this.notes, { ...newNote, id: newId.toString() }]
+      const newNoteObject = { ...newNote, id: newId.toString() }
+      this.notes = [...this.notes, newNoteObject]
+      try {
+        await axios.post(`http://localhost:3000/notes/`, newNoteObject, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+      } catch (error) {
+        console.error('ERROR Adding Note:', error)
+      }
     },
-    updateNote(updatedNote) {
+    async updateNote(updatedNote) {
       const targetNoteIndex = this.notes.findIndex((note) => note.id === updatedNote.id)
       this.notes[targetNoteIndex] = updatedNote
+      try {
+        await axios.put(`http://localhost:3000/notes/${updatedNote.id}`, updatedNote, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+      } catch (error) {
+        console.error('ERROR Editing Note:', error)
+      }
     },
-    deleteNote(targetId) {
+    async deleteNote(targetId) {
       this.notes = this.notes.filter(({ id }) => id !== targetId)
+      try {
+        await axios.delete(`http://localhost:3000/notes/${targetId}`)
+      } catch (error) {
+        console.error('ERROR Deleting Note:', targetId, error)
+      } finally {
+        this.fetchNotes()
+      }
     }
   }
 })
