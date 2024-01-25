@@ -31,7 +31,7 @@ export const useNotesStore = defineStore('notes', {
       }
     },
     async addNote(newNote) {
-      const newId = Math.max(...this.notes.map(({ id }) => id)) + 1
+      const newId = this.notes.length ? Math.max(...this.notes.map(({ id }) => id)) + 1 : 1
       const newNoteObject = { ...newNote, id: newId.toString() }
       this.notes = [...this.notes, newNoteObject]
       try {

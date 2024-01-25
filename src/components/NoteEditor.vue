@@ -11,6 +11,7 @@ const note = ref({
 function submitNote() {
   store.addNote(note.value)
   router.go(-1)
+  console.log("🚀 ~ submitNote ~ note.value:", note.value)
 }
 </script>
 

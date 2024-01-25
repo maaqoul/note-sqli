@@ -5,9 +5,6 @@ import { useNotesStore } from '@/stores/notes'
 
 const store = useNotesStore()
 const notes = computed(() => store.notes)
-// if (!notes.value.length) {
-//   store.fetchNotes()
-// }
 </script>
 
 <template>
