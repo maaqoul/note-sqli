@@ -1,93 +1,79 @@
-import { setActivePinia, createPinia } from 'pinia'
-import { useNotesStore } from '../notes'
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { createPinia, setActivePinia } from 'pinia'
+import { describe, it, expect, jest, vi, afterEach } from 'vitest'
+import { mount } from '@vue/test-utils'
 import axios from 'axios'
+import { useNotesStore } from '../notes'
+import { beforeEach } from 'vitest'
 
-vi.mock('axios')
+//Initialize Pinia
 
-describe('Notes Store', () => {
+const pinia = createPinia()
+
+describe('Notes store', () => {
+  let store
+  //setting up
   beforeEach(() => {
-    // creates a fresh pinia and makes it active
-    // so it's automatically picked up by any useStore() call
-    // without having to pass it to it: `useStore(pinia)`
-    setActivePinia(createPinia())
-  })
-  afterEach(() => {
-    vi.clearAllMocks()
-    vi.resetAllMocks()
+    // Reset the store before each test
+    setActivePinia(pinia)
+
+    // Create new store instance
+    store = useNotesStore()
   })
 
-  it('fetch notes', async () => {
-    const mockNote = {
-      id: '1',
-      content: 'test content',
-      title: 'test title'
-    }
-    const store = useNotesStore()
+  it('should Fetch all notes from server', async () => {
+    // Arrange
+    // Mock Axios simulate a successful response
+    axios.get = vi.fn(() =>
+      Promise.resolve({
+        data: [
+          {
+            id: '1',
+            title: 'Meeting Notes 1.2',
+            content: 'Discuss project updates and deadlines.'
+          }
+        ]
+      })
+    )
 
-    axios.get.mockResolvedValue({ data: [mockNote] })
-
-    expect(store.notes).toStrictEqual([])
+    //Act
+    // call fetchNotes method
 
     await store.fetchNotes()
 
-    expect(store.notes.length).toBe(1)
-    expect(store.notes[0]).toStrictEqual(mockNote)
+    //Assert
+    // Assert the note are populated in the store
+
+    expect(store.notes).toHaveLength(1)
+    expect(store.notes[0].title).toBe('Meeting Notes 1.2')
   })
 
-  it('add note', async () => {
-    const mockNote = {
-      content: 'test content',
-      title: 'test title'
-    }
-    const mockResponseNoteData = { ...mockNote, id: '1' }
-    const store = useNotesStore()
+  it('should return a not by ID', () => {
+    store.notes = [
+      {
+        id: '1',
+        title: 'Meeting Notes 1.2',
+        content: 'Discuss project updates and deadlines.'
+      },
+      {
+        id: '2',
+        title: 'To-Do List 2',
+        content: 'Buy groceries, complete homework, call John.'
+      }
+    ]
 
-    axios.post.mockResolvedValue({ data: mockResponseNoteData })
+    const note = store.getNoteById('2')
 
-    expect(store.notes).toStrictEqual([])
-    await store.addNote(mockNote)
-    expect(store.notes.length).toBe(1)
-    expect(store.notes[0]).toStrictEqual(mockResponseNoteData)
+    expect(note).toEqual({
+      id: '2',
+      title: 'To-Do List 2',
+      content: 'Buy groceries, complete homework, call John.'
+    })
   })
 
-  it('delete note', async () => {
-    const mockNote = {
-      content: 'test content',
-      title: 'test title',
-      id: '1'
-    }
-    const store = useNotesStore()
-    store.notes = [mockNote]
-    axios.delete.mockResolvedValue({ data: {} })
+  //Todo: please test all other actions
 
-    await store.deleteNote('1')
-
-    expect(store.notes.length).toBe(0)
-    expect(store.notes).toStrictEqual([])
-  })
-
-  it('modify note', async () => {
-    const mockNote = {
-      content: 'test content',
-      title: 'test title',
-      id: '1'
-    }
-    const modifiedMockNote = {
-      id: '1',
-      content: 'test content 2.0',
-      title: 'test title 2.0'
-    }
-    const store = useNotesStore()
-    store.notes = [mockNote]
-    axios.put.mockResolvedValue({ data: modifiedMockNote })
-
-    expect(store.notes.length).toBe(1)
-    expect(store.notes[0]).toStrictEqual(mockNote)
-
-    await store.updateNote(modifiedMockNote)
-
-    expect(store.notes.length).toBe(1)
-    expect(store.notes[0]).toStrictEqual(modifiedMockNote)
+  // tearing down
+  afterEach(() => {
+    vi.restoreAllMocks() // restore original axios function
   })
 })

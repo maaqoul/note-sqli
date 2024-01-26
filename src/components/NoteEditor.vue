@@ -4,6 +4,8 @@ import { useRouter } from 'vue-router'
 import { useNotesStore } from '@/stores/notes'
 const store = useNotesStore()
 const router = useRouter()
+console.log('store :', store)
+console.log('router :', router)
 const note = ref({
   title: '',
   content: ''
@@ -11,7 +13,7 @@ const note = ref({
 function submitNote() {
   store.addNote(note.value)
   router.go(-1)
-  console.log("🚀 ~ submitNote ~ note.value:", note.value)
+  console.log('🚀 ~ submitNote ~ note.value:', note.value)
 }
 </script>
 

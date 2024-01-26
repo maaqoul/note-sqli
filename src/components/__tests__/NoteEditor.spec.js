@@ -51,8 +51,7 @@ describe('NoteEditor', () => {
         stubs: ['RouterLink'],
         plugins: [
           createTestingPinia({
-            createSpy: vi.fn,
-            stubActions: true
+            createSpy: vi.fn
           })
         ]
       }
@@ -60,11 +59,13 @@ describe('NoteEditor', () => {
     const store = useNotesStore()
     const router = useRouter()
 
-    await wrapper.get('form').trigger('submit')
+    await wrapper.get('form').trigger('submit.prevent')
 
     expect(store.addNote).toBeCalledTimes(1)
     expect(store.addNote).toBeCalledWith({ title: '', content: '' })
     expect(router.go).toBeCalledTimes(1)
     expect(router.go).toBeCalledWith(-1)
   })
+
+  //Todo: add test suite for modifying the form
 })
